@@ -9,55 +9,48 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as LobbyRouteImport } from './routes/lobby'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LobbyHostCodeRouteImport } from './routes/lobby/$hostCode'
 
-const LobbyRoute = LobbyRouteImport.update({
-  id: '/lobby',
-  path: '/lobby',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LobbyHostCodeRoute = LobbyHostCodeRouteImport.update({
+  id: '/lobby/$hostCode',
+  path: '/lobby/$hostCode',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/lobby': typeof LobbyRoute
+  '/lobby/$hostCode': typeof LobbyHostCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/lobby': typeof LobbyRoute
+  '/lobby/$hostCode': typeof LobbyHostCodeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/lobby': typeof LobbyRoute
+  '/lobby/$hostCode': typeof LobbyHostCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/lobby'
+  fullPaths: '/' | '/lobby/$hostCode'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/lobby'
-  id: '__root__' | '/' | '/lobby'
+  to: '/' | '/lobby/$hostCode'
+  id: '__root__' | '/' | '/lobby/$hostCode'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LobbyRoute: typeof LobbyRoute
+  LobbyHostCodeRoute: typeof LobbyHostCodeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/lobby': {
-      id: '/lobby'
-      path: '/lobby'
-      fullPath: '/lobby'
-      preLoaderRoute: typeof LobbyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -65,12 +58,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lobby/$hostCode': {
+      id: '/lobby/$hostCode'
+      path: '/lobby/$hostCode'
+      fullPath: '/lobby/$hostCode'
+      preLoaderRoute: typeof LobbyHostCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LobbyRoute: LobbyRoute,
+  LobbyHostCodeRoute: LobbyHostCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
