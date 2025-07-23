@@ -1,12 +1,27 @@
+import { useNavigate } from "@tanstack/react-router";
+
 interface GameProps {
+  hostCode: string;
   name: string;
   minPlayers: number;
   maxPlayers: number;
 }
 
-export function Game({ name, minPlayers, maxPlayers }: GameProps) {
+export function Game({ hostCode, name, minPlayers, maxPlayers }: GameProps) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate({
+      to: `/${name.toLowerCase().replace(/\s+/g, "-")}`,
+      search: { hostCode },
+    });
+  };
+
   return (
-    <div className="flex flex-col w-52 h-52 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 border-2 border-blue-300 rounded-xl shadow-lg hover:scale-105 hover:shadow-2xl transition-transform duration-200 cursor-pointer">
+    <div
+      className="flex flex-col w-52 h-52 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 border-2 border-blue-300 rounded-xl shadow-lg hover:scale-105 hover:shadow-2xl transition-transform duration-200 cursor-pointer"
+      onClick={handleClick}
+    >
       <div className="flex items-center justify-center h-2/3 text-xl font-extrabold text-gray-800">
         {name}
       </div>
@@ -19,7 +34,7 @@ export function Game({ name, minPlayers, maxPlayers }: GameProps) {
   );
 }
 
-export default function GameSelection() {
+export default function GameSelection({ hostCode }: { hostCode: string }) {
   const games = [
     { name: "Dixit", minPlayers: 3, maxPlayers: 6 },
     { name: "Chess", minPlayers: 2, maxPlayers: 2 },
@@ -41,6 +56,7 @@ export default function GameSelection() {
             name={game.name}
             minPlayers={game.minPlayers}
             maxPlayers={game.maxPlayers}
+            hostCode={hostCode}
           />
         ))}
       </div>

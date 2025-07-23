@@ -1,9 +1,18 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
+import LobbyPage from "../components/LobbyPage";
+import { z } from "zod";
 
-export const Route = createFileRoute('/lobby')({
-  component: RouteComponent,
-})
+const lobbySearchSchema = z.object({
+  hostCode: z.string().length(6),
+});
 
-function RouteComponent() {
-  return <div>Hello "/lobby"!</div>
+export const Route = createFileRoute("/lobby")({
+  component: LobbyRouteComponent,
+  validateSearch: lobbySearchSchema,
+});
+
+function LobbyRouteComponent() {
+  const { hostCode } = Route.useSearch();
+  console.log("Lobby Route - Host Code:", hostCode);
+  return <LobbyPage hostCode={hostCode} />;
 }

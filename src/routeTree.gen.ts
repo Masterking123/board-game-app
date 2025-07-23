@@ -9,48 +9,72 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LobbyRouteImport } from './routes/lobby'
+import { Route as DixitRouteImport } from './routes/dixit'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as LobbyHostCodeRouteImport } from './routes/lobby/$hostCode'
 
+const LobbyRoute = LobbyRouteImport.update({
+  id: '/lobby',
+  path: '/lobby',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DixitRoute = DixitRouteImport.update({
+  id: '/dixit',
+  path: '/dixit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LobbyHostCodeRoute = LobbyHostCodeRouteImport.update({
-  id: '/lobby/$hostCode',
-  path: '/lobby/$hostCode',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/lobby/$hostCode': typeof LobbyHostCodeRoute
+  '/dixit': typeof DixitRoute
+  '/lobby': typeof LobbyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/lobby/$hostCode': typeof LobbyHostCodeRoute
+  '/dixit': typeof DixitRoute
+  '/lobby': typeof LobbyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/lobby/$hostCode': typeof LobbyHostCodeRoute
+  '/dixit': typeof DixitRoute
+  '/lobby': typeof LobbyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/lobby/$hostCode'
+  fullPaths: '/' | '/dixit' | '/lobby'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/lobby/$hostCode'
-  id: '__root__' | '/' | '/lobby/$hostCode'
+  to: '/' | '/dixit' | '/lobby'
+  id: '__root__' | '/' | '/dixit' | '/lobby'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LobbyHostCodeRoute: typeof LobbyHostCodeRoute
+  DixitRoute: typeof DixitRoute
+  LobbyRoute: typeof LobbyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/lobby': {
+      id: '/lobby'
+      path: '/lobby'
+      fullPath: '/lobby'
+      preLoaderRoute: typeof LobbyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dixit': {
+      id: '/dixit'
+      path: '/dixit'
+      fullPath: '/dixit'
+      preLoaderRoute: typeof DixitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -58,19 +82,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lobby/$hostCode': {
-      id: '/lobby/$hostCode'
-      path: '/lobby/$hostCode'
-      fullPath: '/lobby/$hostCode'
-      preLoaderRoute: typeof LobbyHostCodeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LobbyHostCodeRoute: LobbyHostCodeRoute,
+  DixitRoute: DixitRoute,
+  LobbyRoute: LobbyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

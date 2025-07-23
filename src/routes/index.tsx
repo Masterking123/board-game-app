@@ -1,7 +1,6 @@
 import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useNavigate } from "@tanstack/react-router";
-
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import "./index.css";
 
 export const Route = createFileRoute("/")({
@@ -15,7 +14,7 @@ function Index() {
 
   function generateCode() {
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    navigate({ to: `/lobby/${code}` });
+    navigate({ to: `/lobby`, search: { hostCode: code } });
   }
 
   function handleJoin() {
@@ -24,7 +23,7 @@ function Index() {
 
   function submitJoinCode() {
     if (!joinCode) return;
-    navigate({ to: `/lobby/${joinCode.toUpperCase()}` });
+    navigate({ to: `/lobby`, search: { hostCode: joinCode } });
   }
 
   return (
