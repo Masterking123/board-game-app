@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import LobbyPage from "../../components/LobbyPage";
 
 export const Route = createFileRoute("/lobby/$hostCode")({
   component: LobbyComponent,
@@ -6,5 +7,5 @@ export const Route = createFileRoute("/lobby/$hostCode")({
 
 function LobbyComponent() {
   const { hostCode } = Route.useParams();
-  return <div>Hello from lobby: {hostCode}</div>;
+  return <LobbyPage></LobbyPage>;
 }

@@ -22,8 +22,7 @@ function Index() {
     setJoinMode(true);
   }
 
-  function submitJoinCode(e: React.FormEvent) {
-    e.preventDefault();
+  function submitJoinCode() {
     if (!joinCode) return;
     navigate({ to: `/lobby/${joinCode.toUpperCase()}` });
   }
