@@ -1,13 +1,9 @@
 import React from "react";
+import { useLobbyStore } from "../lobbyStore";
 
 export default function LobbySidebar() {
   // Test player data
-  const players = [
-    { name: "Alice" },
-    { name: "Bob" },
-    { name: "Charlie" },
-    { name: "Dana" },
-  ];
+  const players = useLobbyStore((state) => state.users);
 
   return (
     <aside className="fixed top-0 right-0 h-screen w-1/4 min-w-[300px] max-w-[400px] bg-white shadow-xl rounded-l-2xl p-8 border-l border-gray-200 flex flex-col gap-6 z-20">
@@ -83,9 +79,9 @@ export default function LobbySidebar() {
       <div>
         <h3 className="text-lg font-bold mb-2 text-gray-700">Players</h3>
         <ul className="flex flex-col gap-3">
-          {players.map((player, idx) => (
+          {players.map((player) => (
             <li
-              key={player.name}
+              key={player}
               className="flex items-center gap-3 p-2 rounded-lg bg-blue-50 hover:bg-blue-100 transition"
             >
               <span className="inline-block w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center text-white font-bold text-lg shadow">
@@ -105,7 +101,7 @@ export default function LobbySidebar() {
                   />
                 </svg>
               </span>
-              <span className="font-medium text-gray-800">{player.name}</span>
+              <span className="font-medium text-gray-800">{player}</span>
             </li>
           ))}
         </ul>
