@@ -1,5 +1,6 @@
 import { useSupabaseStore, type ISupabaseStore } from "./supabaseStore";
 import { create, useStore } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 console.log("Initializing lobby store...");
 
@@ -9,11 +10,23 @@ interface ILobbyStore {
   lobby_uuid: string;
 }
 
-export const useLobbyStore = create<ILobbyStore>((set) => ({
-  users: [],
-  lobby_code: "",
-  lobby_uuid: "",
-}));
+export const useLobbyStore = create<ILobbyStore>()(
+  persist(
+    (set) => ({
+      users: [],
+      lobby_code: "",
+      lobby_uuid: "",
+    }),
+    {
+      name: "lobby-storage",
+      storage: createJSONStorage(() => sessionStorage),
+      partialize: (state) => ({
+        lobby_code: state.lobby_code,
+        lobby_uuid: state.lobby_uuid,
+      }),
+    }
+  )
+);
 
 useLobbyStore.subscribe(async (state, prevState) => {
   const supabase = useSupabaseStore.getState().supabase;
