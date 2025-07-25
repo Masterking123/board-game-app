@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Opening Phase
 // Pick your story teller
@@ -18,32 +18,43 @@ import { useState } from "react";
 // Change the story teller counter clockwise
 // Check if any player has won the game
 
+function getRandomInt(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 export default function DixitHand() {
-  // This function max and min are inclusive
-  function getRandomInt(min: number, max: number) {
-    const minCeiled = Math.ceil(min);
-    const maxFloored = Math.floor(max + 1);
-    return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [cards, setCards] = useState<number[]>([]);
+
+  function handleOnHover(card: number | null) {
+    setHoveredCard(card);
   }
 
-  const [isCardSelected, setIsCardSelected] = useState(false);
-
-  function handleOnHover() {}
-
-  const cards: number[] = [];
-  const rotations = [-8, -5, -1, 1, 5, 8];
-
-  while (cards.length != 6) {
-    let number = getRandomInt(1, 108);
-    if (!cards.includes(number)) {
-      cards.push(number);
+  useEffect(() => {
+    const generatedCards: number[] = [];
+    while (generatedCards.length !== 6) {
+      const number = getRandomInt(1, 108);
+      if (!generatedCards.includes(number)) {
+        generatedCards.push(number);
+      }
     }
-  }
-  console.log(cards);
+    setCards(generatedCards);
+  }, []);
+
+  const rotations = [-8, -5, -1, 1, 5, 8];
 
   return (
     <div className="min-h-screen flex flex-col justify-end">
-      <div className="flex justify-center items-center grow"></div>
+      <div className="flex justify-center items-center grow">
+        {hoveredCard && (
+          <div
+            className="w-32 h-48 rounded-lg shadow-lg bg-cover bg-center"
+            style={{
+              backgroundImage: `url(/src/assets/dixit_cards/card_${hoveredCard}.png)`,
+            }}
+          ></div>
+        )}
+      </div>
 
       <div className="flex justify-center gap-4 px-10 py-10 max-w-4xl mx-auto">
         {cards.map((card, index) => (
@@ -54,6 +65,8 @@ export default function DixitHand() {
               backgroundImage: `url(/src/assets/dixit_cards/card_${card}.png)`,
               transform: `rotate(${rotations[index % rotations.length]}deg)`,
             }}
+            onMouseEnter={() => handleOnHover(card)}
+            onMouseLeave={() => handleOnHover(null)}
           ></div>
         ))}
       </div>

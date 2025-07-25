@@ -13,3 +13,7 @@ CREATE TABLE lobby_users (
     PRIMARY KEY (lobby_id, user_name),
     FOREIGN KEY (lobby_id) REFERENCES lobby(id)
 );
+
+CREATE TABLE events (
+    
+)
