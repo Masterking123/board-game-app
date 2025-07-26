@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLobbyStore } from "../../lobbyStore";
 
 // Opening Phase
 // Pick your story teller
@@ -22,9 +23,10 @@ function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-export default function DixitHand() {
+export default function Hand() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [cards, setCards] = useState<number[]>([]);
+  const players = useLobbyStore((state) => state.users);
 
   function handleOnHover(card: number | null) {
     setHoveredCard(card);
@@ -44,18 +46,18 @@ export default function DixitHand() {
   const rotations = [-8, -5, -1, 1, 5, 8];
 
   return (
-    <div className="min-h-screen flex flex-col justify-end">
-      <div className="flex justify-center items-center grow">
-        {hoveredCard && (
-          <div
-            className="w-32 h-48 rounded-lg shadow-lg bg-cover bg-center"
-            style={{
-              backgroundImage: `url(/src/assets/dixit_cards/card_${hoveredCard}.png)`,
-            }}
-          ></div>
-        )}
-      </div>
-
+    <div className="flex flex-col items-center w-full">
+      {/* Hovered Card Preview */}
+      {hoveredCard && (
+        <div
+          className="w-48 h-72 rounded-lg shadow-lg bg-cover bg-center mb-4"
+          style={{
+            backgroundImage: `url(/src/assets/dixit_cards/card_${hoveredCard}.png)`,
+            zIndex: 10,
+          }}
+        ></div>
+      )}
+      {/* Player Own Cards Area */}
       <div className="flex justify-center gap-4 px-10 py-10 max-w-4xl mx-auto">
         {cards.map((card, index) => (
           <div
