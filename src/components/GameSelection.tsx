@@ -1,4 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
+import { useLobbyStore } from "../lobbyStore";
 
 interface GameProps {
   hostCode: string;
@@ -9,8 +10,12 @@ interface GameProps {
 
 export function Game({ hostCode, name, minPlayers, maxPlayers }: GameProps) {
   const navigate = useNavigate();
+  const local_user = useLobbyStore((state) => state.local_user);
+
+  const isDisabled = !local_user?.is_host;
 
   const handleClick = () => {
+    if (isDisabled) return;
     navigate({
       to: `/${name.toLowerCase().replace(/\s+/g, "-")}`,
       search: { hostCode },
@@ -19,8 +24,10 @@ export function Game({ hostCode, name, minPlayers, maxPlayers }: GameProps) {
 
   return (
     <div
-      className="flex flex-col w-52 h-52 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 border-2 border-blue-300 rounded-xl shadow-lg hover:scale-105 hover:shadow-2xl transition-transform duration-200 cursor-pointer"
+      className={`flex flex-col w-52 h-52 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 border-2 border-blue-300 rounded-xl shadow-lg transition-transform duration-200 ${isDisabled ? "opacity-50 grayscale cursor-not-allowed" : "hover:scale-105 hover:shadow-2xl cursor-pointer"}`}
       onClick={handleClick}
+      aria-disabled={isDisabled}
+      tabIndex={isDisabled ? -1 : 0}
     >
       <div className="flex items-center justify-center h-2/3 text-xl font-extrabold text-gray-800">
         {name}
@@ -36,7 +43,7 @@ export function Game({ hostCode, name, minPlayers, maxPlayers }: GameProps) {
 
 export default function GameSelection({ hostCode }: { hostCode: string }) {
   const games = [
-    { name: "Dixit", minPlayers: 3, maxPlayers: 6 },
+    { name: "Dixit", minPlayers: 3, maxPlayers: 8 },
     { name: "Chess", minPlayers: 2, maxPlayers: 2 },
     { name: "Sudoku", minPlayers: 1, maxPlayers: 1 },
     { name: "Tic Tac Toe", minPlayers: 2, maxPlayers: 2 },

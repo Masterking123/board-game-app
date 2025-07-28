@@ -17,6 +17,7 @@ export const Route = createFileRoute("/lobby")({
 function LobbyRouteComponent() {
   const { hostCode } = Route.useSearch();
   const users = useLobbyStore((state) => state.users);
+  const local_user = useLobbyStore((state) => state.local_user);
   const lobby_uuid = useLobbyStore((state) => state.lobby_uuid);
   const supabase = useSupabaseStore.getState().supabase;
 
@@ -26,7 +27,7 @@ function LobbyRouteComponent() {
 
       const { data, error } = await supabase
         .from("lobby_users")
-        .select("user_name")
+        .select("user_name, is_host")
         .eq("lobby_id", lobby_uuid);
 
       if (error) {
@@ -35,7 +36,7 @@ function LobbyRouteComponent() {
       }
 
       useLobbyStore.setState({
-        users: data.map((user) => user.user_name),
+        users: data.map((user) => user),
       });
     };
 
@@ -43,6 +44,7 @@ function LobbyRouteComponent() {
   }, [lobby_uuid]);
 
   console.log(users);
+  console.log("Current User in lobby:", local_user);
 
   console.log("Lobby Route - Host Code:", hostCode);
   return <LobbyPage hostCode={hostCode} />;

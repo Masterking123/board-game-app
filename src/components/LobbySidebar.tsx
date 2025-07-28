@@ -81,7 +81,7 @@ export default function LobbySidebar() {
         <ul className="flex flex-col gap-3">
           {players.map((player) => (
             <li
-              key={player}
+              key={player.user_name}
               className="flex items-center gap-3 p-2 rounded-lg bg-blue-50 hover:bg-blue-100 transition"
             >
               <span className="inline-block w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center text-white font-bold text-lg shadow">
@@ -101,7 +101,25 @@ export default function LobbySidebar() {
                   />
                 </svg>
               </span>
-              <span className="font-medium text-gray-800">{player}</span>
+              {/* Player name and host crown icon */}
+              <span className="font-medium text-gray-800 flex items-center gap-1">
+                {player.user_name}
+
+                {/* If the player is the host, show a crown icon next to their name */}
+                {player.is_host && (
+                  <svg
+                    className="w-4 h-4 text-yellow-400 ml-1"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    {/* Crown shape */}
+                    <path d="M2 19h20l-2-9-4 4-4-8-4 8-4-4z" />
+                    <circle cx="4" cy="10" r="1" />
+                    <circle cx="12" cy="4" r="1" />
+                    <circle cx="20" cy="10" r="1" />
+                  </svg>
+                )}
+              </span>
             </li>
           ))}
         </ul>

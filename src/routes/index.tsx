@@ -26,12 +26,13 @@ function Index() {
     useLobbyStore.setState({
       lobby_code: code,
       lobby_uuid: lobbyId,
+      local_user: { user_name: username, is_host: true },
     });
     await supabase.from("lobby").insert({ host_code: code, id: lobbyId });
 
     await supabase
       .from("lobby_users")
-      .insert({ lobby_id: lobbyId, user_name: username });
+      .insert({ lobby_id: lobbyId, user_name: username, is_host: true });
     navigate({ to: `/lobby`, search: { hostCode: code } });
   }
 
@@ -59,11 +60,12 @@ function Index() {
     useLobbyStore.setState({
       lobby_code: joinCode,
       lobby_uuid: data[0].id,
+      local_user: { user_name: username, is_host: false },
     });
 
     await supabase
       .from("lobby_users")
-      .insert({ lobby_id: data[0].id, user_name: username });
+      .insert({ lobby_id: data[0].id, user_name: username, is_host: false });
 
     navigate({ to: `/lobby`, search: { hostCode: joinCode } });
   }
