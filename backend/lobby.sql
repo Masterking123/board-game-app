@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS game_states;
 CREATE TABLE lobby (
     host_code TEXT, 
     id UUID PRIMARY KEY,
+    game_route TEXT,
 );
 
 CREATE TABLE lobby_users (

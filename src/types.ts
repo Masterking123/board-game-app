@@ -1,17 +1,4 @@
-export type EventType =
-  | "game_started"
-  | "player_voted"
-  | "card_played"
-  | "round_ended";
-
-export interface GameStartedEvent {
-  gameName: string;
-  hostCode: string;
-}
-
-export interface EventDataMap {
-  game_started: GameStartedEvent;
-}
+import type { EventDataMap } from "./gamelogic/dixitLogic";
 
 export interface BaseEvent<T extends keyof EventDataMap = keyof EventDataMap> {
   id: string;
@@ -19,12 +6,4 @@ export interface BaseEvent<T extends keyof EventDataMap = keyof EventDataMap> {
   event_type: T;
   event_data: EventDataMap[T];
   created_at: string;
-}
-
-export interface BaseGameState {
-  lobby_id: string;
-  players: string[];
-  currentRound: number;
-  gameStarted: boolean;
-  hostCode: string;
 }

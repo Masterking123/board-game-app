@@ -5,7 +5,7 @@ import { useLobbyStore } from "../lobbyStore";
 import GameBoard from "../components/Dixit/GameBoard";
 import OpponentHand from "../components/Dixit/OpponentHand";
 import { useSupabaseStore } from "../supabaseStore";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { initDixitGameLogic } from "../gamelogic/dixitLogic";
 import { sendEvent } from "../utils";
 
@@ -24,7 +24,7 @@ function DixitComponent() {
   const users = useLobbyStore((state) => state.users);
   const lobby_uuid = useLobbyStore((state) => state.lobby_uuid);
   const supabase = useSupabaseStore.getState().supabase;
-  const [gameState, setGameState] = useState(null);
+  const local_user = useLobbyStore.getState().local_user;
 
   console.log("lobby_uuid:", lobby_uuid);
 
@@ -66,60 +66,60 @@ function DixitComponent() {
       );
       initDixitGameLogic();
     }
-
-    sendEvent({
-      id: crypto.randomUUID(),
-      lobby_id: lobby_uuid,
-      event_type: "game_started",
-      event_data: {
-        gameName: "Dixit",
-        hostCode: hostCode,
-      },
-      created_at: new Date().toISOString(),
-    });
   }, []);
 
   useEffect(() => {
-    const local_user = useLobbyStore.getState().local_user;
+    console.log("Setting up game state subscription...");
     if (!lobby_uuid || !local_user || !local_user.user_name) return;
 
-    const fetchGameState = async () => {
-      const { data, error } = await supabase
-        .from("game_states")
-        .select("game_state")
-        .eq("lobby_id", lobby_uuid)
-        .eq("user_name", local_user.user_name)
-        .single();
-
-      if (error) {
-        console.error("Failed to fetch game state:", error);
-        return;
-      }
-
-      if (data) {
-        setGameState(data.game_state);
-      }
-    };
-
-    fetchGameState();
-
-    const gameStateChannel = supabase
-      .channel("game-state-changes")
+    const channel = supabase
+      .channel("game-state-channel")
       .on(
         "postgres_changes",
         {
-          event: "UPDATE",
+          event: "*", // listen to INSERT and UPDATE
           schema: "public",
           table: "game_states",
-          filter: `lobby_id=eq.${lobby_uuid},user_name=eq.${local_user.user_name}`,
         },
-        (payload) => {
-          console.log("Game state update payload:", payload);
-          const newState = payload.new.game_state;
-          setGameState(newState);
+        async (payload) => {
+          console.log("Detected game state change in DB:", payload);
+
+          const changedGameState = payload.new as {
+            lobby_id?: string;
+            user_name?: string;
+          };
+
+          if (
+            changedGameState.lobby_id !== lobby_uuid ||
+            changedGameState.user_name !== local_user.user_name
+          ) {
+            return;
+          }
+
+          // Always re-fetch the game state fresh
+          const { data, error } = await supabase
+            .from("game_states")
+            .select("*")
+            .eq("lobby_id", lobby_uuid)
+            .eq("user_name", local_user.user_name)
+            .maybeSingle();
+
+          if (error) {
+            console.error("Failed to re-fetch game state:", error);
+          } else {
+            console.log("Updated game state:", data);
+            // useDixitGameStore.setState({
+            //   userGameState: data.user_game_state,
+            //   masterGameState: data.master_game_state,
+            // });
+          }
         }
       )
       .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [lobby_uuid]);
 
   console.log("Users in Dixit:", users);

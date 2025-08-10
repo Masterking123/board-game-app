@@ -4,6 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import "./index.css";
 import { useSupabaseStore } from "../supabaseStore";
 import { useLobbyStore } from "../lobbyStore";
+import { Game } from "../components/GameSelection";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -28,7 +29,9 @@ function Index() {
       lobby_uuid: lobbyId,
       local_user: { user_name: username, is_host: true },
     });
-    await supabase.from("lobby").insert({ host_code: code, id: lobbyId });
+    await supabase
+      .from("lobby")
+      .insert({ host_code: code, id: lobbyId, game_route: null });
 
     await supabase
       .from("lobby_users")
